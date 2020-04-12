@@ -1,4 +1,4 @@
-module klog-logrus
+module github.com/tzvatot/klog-logrus
 
 go 1.13
 
