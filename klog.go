@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"sync"
+	"sync/atomic"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/klog"
 )
 
 var logger logrus.FieldLogger = &logrus.Logger{
@@ -22,16 +23,76 @@ func SetLogger(log logrus.FieldLogger) {
 	mu.Unlock()
 }
 
-func V(level klog.Level) klog.Verbose {
-	klogLevel := level.Get()
-	newLevel, err := logrus.ParseLevel(fmt.Sprintf("%d", klogLevel))
+type Level int32
+
+// get returns the value of the Level.
+func (l *Level) get() Level {
+	return Level(atomic.LoadInt32((*int32)(l)))
+}
+
+// set sets the value of the Level.
+func (l *Level) set(val Level) {
+	atomic.StoreInt32((*int32)(l), int32(val))
+}
+
+// String is part of the flag.Value interface.
+func (l *Level) String() string {
+	return strconv.FormatInt(int64(*l), 10)
+}
+
+// Get is part of the flag.Value interface.
+func (l *Level) Get() interface{} {
+	return *l
+}
+
+// Set is part of the flag.Value interface.
+func (l *Level) Set(value string) error {
+	v, err := strconv.Atoi(value)
+	if err != nil {
+		return err
+	}
+	newLevel, err := logrus.ParseLevel(fmt.Sprintf("%d", v))
+	if err != nil {
+		return fmt.Errorf("setting log level failed: %v", err)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	logrus.SetLevel(newLevel)
+	return nil
+}
+
+type Verbose bool
+
+func V(level Level) Verbose {
+	newLevel, err := logrus.ParseLevel(fmt.Sprintf("%s", level.String()))
 	if err != nil {
 		logger.Panic("Setting log level failed: %v", err)
-		return klog.Verbose(false)
+		return Verbose(false)
 	}
 	logrus.SetLevel(newLevel)
-	return klog.Verbose(true)
+	return Verbose(true)
 }
+
+// Info is equivalent to the global Info function, guarded by the value of v.
+// See the documentation of V for usage.
+func (v Verbose) Info(args ...interface{}) {
+	if v {
+		logger.Info(args...)
+	}
+}
+
+func (v Verbose) Infoln(args ...interface{}) {
+	if v {
+		logger.Infoln(args...)
+	}
+}
+
+func (v Verbose) Infof(format string, args ...interface{}) {
+	if v {
+		logger.Infof(format, args...)
+	}
+}
+
 
 // Info logs to the INFO log.
 // Arguments are handled in the manner of fmt.Print; a newline is appended if missing.
