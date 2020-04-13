@@ -53,8 +53,9 @@ func (l *Level) Set(value string) error {
 type Verbose bool
 
 func V(level Level) Verbose {
-	logger.Infof("setting log level between klog and logrus is not supported")
-	return Verbose(true)
+	currentLevel := int(logrus.GetLevel())
+	newLevel := int(level)
+	return Verbose(newLevel > currentLevel)
 }
 
 // Info is equivalent to the global Info function, guarded by the value of v.
