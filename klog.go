@@ -55,7 +55,7 @@ type Verbose bool
 func V(level Level) Verbose {
 	currentLevel := int(logrus.GetLevel())
 	newLevel := int(level)
-	return Verbose(newLevel > currentLevel)
+	return Verbose(newLevel < currentLevel)
 }
 
 // Info is equivalent to the global Info function, guarded by the value of v.
