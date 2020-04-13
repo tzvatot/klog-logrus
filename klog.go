@@ -54,8 +54,20 @@ type Verbose bool
 
 func V(level Level) Verbose {
 	currentLevel := int(logrus.GetLevel())
-	newLevel := int(level)
-	return Verbose(newLevel < currentLevel)
+	value := false
+	switch int(level) {
+	case 0:
+    value = currentLevel <= int(logrus.ErrorLevel)
+	case 1:
+		value = currentLevel <= int(logrus.WarnLevel)
+	case 2:
+	  value = currentLevel <= int(logrus.InfoLevel)
+	case 3:
+		value = currentLevel <= int(logrus.DebugLevel)
+	default:
+		value = currentLevel <= int(logrus.TraceLevel)
+	}
+	return Verbose(value)
 }
 
 // Info is equivalent to the global Info function, guarded by the value of v.
