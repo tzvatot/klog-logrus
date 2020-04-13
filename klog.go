@@ -57,15 +57,15 @@ func V(level Level) Verbose {
 	value := false
 	switch int(level) {
 	case 0:
-    value = currentLevel <= int(logrus.ErrorLevel)
+    value = currentLevel > int(logrus.ErrorLevel)
 	case 1:
-		value = currentLevel <= int(logrus.WarnLevel)
+		value = currentLevel > int(logrus.WarnLevel)
 	case 2:
-	  value = currentLevel <= int(logrus.InfoLevel)
+	  value = currentLevel > int(logrus.InfoLevel)
 	case 3:
-		value = currentLevel <= int(logrus.DebugLevel)
+		value = currentLevel > int(logrus.DebugLevel)
 	default:
-		value = currentLevel <= int(logrus.TraceLevel)
+		value = currentLevel > int(logrus.TraceLevel)
 	}
 	return Verbose(value)
 }
