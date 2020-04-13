@@ -1,4 +1,4 @@
-package klog_logrus
+package klog
 
 import (
 	"fmt"
