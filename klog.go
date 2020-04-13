@@ -1,7 +1,6 @@
 package klog
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -47,29 +46,14 @@ func (l *Level) Get() interface{} {
 
 // Set is part of the flag.Value interface.
 func (l *Level) Set(value string) error {
-	v, err := strconv.Atoi(value)
-	if err != nil {
-		return err
-	}
-	newLevel, err := logrus.ParseLevel(fmt.Sprintf("%d", v))
-	if err != nil {
-		return fmt.Errorf("setting log level failed: %v", err)
-	}
-	mu.Lock()
-	defer mu.Unlock()
-	logrus.SetLevel(newLevel)
+	logger.Infof("setting log level between klog and logrus is not supported")
 	return nil
 }
 
 type Verbose bool
 
 func V(level Level) Verbose {
-	newLevel, err := logrus.ParseLevel(fmt.Sprintf("%s", level.String()))
-	if err != nil {
-		logger.Panic("Setting log level failed: %v", err)
-		return Verbose(false)
-	}
-	logrus.SetLevel(newLevel)
+	logger.Infof("setting log level between klog and logrus is not supported")
 	return Verbose(true)
 }
 
