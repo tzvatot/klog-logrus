@@ -57,11 +57,11 @@ func V(level Level) Verbose {
 	value := false
 	switch int(level) {
 	case 0:
-    value = currentLevel > int(logrus.ErrorLevel)
+		value = currentLevel > int(logrus.ErrorLevel)
 	case 1:
 		value = currentLevel > int(logrus.WarnLevel)
 	case 2:
-	  value = currentLevel > int(logrus.InfoLevel)
+		value = currentLevel > int(logrus.InfoLevel)
 	case 3:
 		value = currentLevel > int(logrus.DebugLevel)
 	default:
@@ -89,7 +89,6 @@ func (v Verbose) Infof(format string, args ...interface{}) {
 		logger.Infof(format, args...)
 	}
 }
-
 
 // Info logs to the INFO log.
 // Arguments are handled in the manner of fmt.Print; a newline is appended if missing.
@@ -189,7 +188,6 @@ func Fatalln(args ...interface{}) {
 func Fatalf(format string, args ...interface{}) {
 	logger.Fatalf(format, args...)
 }
-
 
 // Exit logs to the FATAL, ERROR, WARNING, and INFO logs, then calls os.Exit(1).
 // Arguments are handled in the manner of fmt.Print; a newline is appended if missing.
